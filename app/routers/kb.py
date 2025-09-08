@@ -93,10 +93,38 @@ def list_files(limit: int = 50) -> Dict[str, Any]:
     vs_id = get_vector_store_id()
     if not vs_id:
         raise HTTPException(400, "Vector store non inizializzato.")
-    res = client.vector_stores.files.list(vector_store_id=vs_id, limit=limit)
-    items = [{"id": f.id, "filename": getattr(f, "filename", None), "created_at": getattr(f, "created_at", None)}
-             for f in getattr(res, "data", [])]
-    return {"vector_store_id": vs_id, "count": len(items), "files": items, "has_more": getattr(res, "has_more", False)}
+    safe_limit = min(max(limit, 1), 100)
+
+    res = client.vector_stores.files.list(vector_store_id=vs_id, limit=safe_limit)
+
+    items = []
+    for assoc in getattr(res, "data", []):
+        file_id = getattr(assoc, "file_id", None) or getattr(assoc, "id", None)
+        fname = None
+        fsize = None
+        try:
+            if file_id:
+                fmeta = client.files.retrieve(file_id)
+                fname = getattr(fmeta, "filename", None)
+                fsize = getattr(fmeta, "bytes", None)
+        except Exception:
+            pass
+
+        items.append({
+            "id": assoc.id,                 
+            "file_id": file_id,             
+            "filename": fname,              
+            "bytes": fsize,                 
+            "created_at": getattr(assoc, "created_at", None),
+        })
+
+    return {
+        "vector_store_id": vs_id,
+        "count": len(items),
+        "files": items,
+        "has_more": getattr(res, "has_more", False),
+    }
+
 
 
 @router.delete("/files/{file_id}")
