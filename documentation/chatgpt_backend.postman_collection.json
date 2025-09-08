@@ -1,0 +1,121 @@
+{
+  "info": {
+    "name": "ChatGPT Backend API",
+    "_postman_id": "7a7b8b7c-0000-0000-0000-000000000002",
+    "description": "Collection per testare il backend ChatGPT con FastAPI",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Chat (non streaming)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"{{model}}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Rispondi in modo conciso.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Dammi 3 idee per il nome di un torneo di tennis amatoriale.\"\n    }\n  ],\n  \"temperature\": 0.5\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/chat",
+          "host": ["{{base_url}}"],
+          "path": ["chat"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Chat (streaming)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"{{model}}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Rispondi in italiano, stile amichevole.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Raccontami in 5 righe come funziona il tie-break nel tennis.\"\n    }\n  ],\n  \"stream\": true\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/chat/stream",
+          "host": ["{{base_url}}"],
+          "path": ["chat", "stream"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "KB - Init Vector Store",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"my-kb\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/kb/vector-store/init",
+          "host": ["{{base_url}}"],
+          "path": ["kb", "vector-store", "init"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "KB - Upload Files (form-data)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "files",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/kb/upload",
+          "host": ["{{base_url}}"],
+          "path": ["kb", "upload"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "KB - Ask (file search)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Riassumi i punti chiave del documento X e cita le fonti.\",\n  \"model\": \"{{model}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/ask-kb",
+          "host": ["{{base_url}}"],
+          "path": ["ask-kb"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
